@@ -6,6 +6,8 @@
   "durable_objects": {
     "bindings": [{ "name": "CLICKER_ROOMS", "class_name": "ClickerRoom" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ClickerRoom"] }],
+  "exports": {
+    "ClickerRoom": { "type": "durable-object", "storage": "sqlite" }
+  },
   "observability": { "enabled": true }
 }

@@ -49,7 +49,7 @@ npm run build
 npx wrangler deploy
 ```
 
-The `wrangler.jsonc` includes a SQLite Durable Object migration. Cloudflare deploys the Worker and provisions the room binding. Attach a **Workers Custom Domain** of `clicker.mightora.io` to the `mightora-clicker` Worker in Cloudflare. Keep HTTPS enforced.
+The `wrangler.jsonc` includes a declarative SQLite Durable Object export. Cloudflare deploys the Worker and provisions the room binding. Attach a **Workers Custom Domain** of `clicker.mightora.io` to the `mightora-clicker` Worker in Cloudflare. Keep HTTPS enforced.
 
 The GitHub Actions deployment needs repository secrets:
 
