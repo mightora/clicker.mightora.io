@@ -18,3 +18,17 @@ jobs:
           python-version: '3.12'
       - run: npm test
       - run: npm run check
+  powershell-syntax:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check native Windows companion script
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/companion/clicker-windows.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | Out-String | Write-Error
+            exit 1
+          }

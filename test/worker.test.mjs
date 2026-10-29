@@ -48,6 +48,20 @@ test('serves app assets with a restrictive CSP and no-cache HTML', async () => {
     assert.equal(res.status, 200);
     assert.ok((await res.text()).length > 100);
   }
+  const python = await worker.fetch(new Request('https://example.org/downloads/clicker.py'), env);
+  assert.equal(python.status, 200);
+  assert.match(python.headers.get('content-disposition'), /attachment/);
+  assert.match(await python.text(), /pynput/);
+  const powershell = await worker.fetch(new Request('https://example.org/downloads/clicker-windows.ps1'), env);
+  assert.equal(powershell.status, 200);
+  assert.match(await powershell.text(), /ClientWebSocket/);
+  const zip = await worker.fetch(new Request('https://example.org/downloads/clicker-companion.zip'), env);
+  assert.equal(zip.status, 200);
+  assert.equal(zip.headers.get('content-type'), 'application/zip');
+  const zipBytes = Buffer.from(await zip.arrayBuffer());
+  assert.equal(zipBytes.readUInt32LE(0), 0x04034b50);
+  assert.ok(zipBytes.includes(Buffer.from('setup-windows.bat')));
+  assert.ok(zipBytes.includes(Buffer.from('clicker-windows.ps1')));
 });
 
 test('creates a random session and stores only hashed tokens', async () => {

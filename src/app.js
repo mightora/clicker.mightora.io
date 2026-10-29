@@ -139,13 +139,29 @@
   const match = /^#remote\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)$/.exec(location.hash);
   if (match) initRemote(match[1], match[2]);
   else {
+    const downloadSection = document.createElement('section');
+    downloadSection.id = 'download-helper';
+    downloadSection.className = 'download-helper page-wrap';
+    downloadSection.setAttribute('aria-labelledby', 'downloadHeading');
+    downloadSection.innerHTML = `
+      <div class="download-heading"><div><div class="kicker">DESKTOP HELPERS / CHOOSE YOUR WAY</div><h2 id="downloadHeading">Get your computer ready.</h2></div><p>Phones need no app. For real PowerPoint or Keynote keyboard control, your computer needs one small helper. Pick the option that suits you.</p></div>
+      <div class="helper-grid">
+        <article class="helper-card featured"><div class="helper-icon" aria-hidden="true">▣</div><div class="helper-label">Easiest / No Python installation</div><h3>Standalone desktop app</h3><p>Portable Windows, macOS and Linux builds. Open the latest successful GitHub Actions run, then download your operating system's file under Artifacts.</p><a class="helper-btn emphasis" target="_blank" rel="noopener noreferrer" href="https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml">Browse desktop downloads ↗</a></article>
+        <article class="helper-card"><div class="helper-icon" aria-hidden="true">⌘</div><div class="helper-label">Windows / No Python</div><h3>PowerShell helper</h3><p>Works with Windows' built-in PowerShell, with no Python packages. Use where your computer's script execution policy allows it.</p><a class="helper-btn" href="/downloads/clicker-windows.ps1" download>Download PowerShell script ↓</a></article>
+        <article class="helper-card"><div class="helper-icon" aria-hidden="true">⌨</div><div class="helper-label">Cross-platform / Python option</div><h3>Python starter kit</h3><p>One ZIP contains the Python script, setup launchers, requirements and instructions for Windows, macOS and Linux.</p><a class="helper-btn" href="/downloads/clicker-companion.zip" download>Download starter ZIP ↓</a><div class="helper-extra"><a href="/downloads/clicker.py" download>Or download only the .py script ↓</a></div></article>
+      </div>
+      <div class="helper-steps"><h3>How to set it up</h3><ol><li><strong>Download:</strong> choose the standalone build, Windows PowerShell file or Python starter ZIP above.</li><li><strong>Start on your computer:</strong> standalone build — open the downloaded executable. PowerShell — open the <code>.ps1</code> where your policy permits. Python ZIP — extract it, then on Windows run <code>setup-windows.bat</code>; on macOS/Linux run <code>sh setup-mac-linux.sh</code> in Terminal.</li><li><strong>Pair:</strong> start a session on this website and select <strong>Copy private connection code</strong>. Paste that code into the helper.</li><li><strong>Present:</strong> click back into PowerPoint, Keynote or your slides. Scan the QR on your phone and use the arrows.</li></ol><p>Downloaded the Python script alone? First run <code>python -m pip install "websockets>=14,<17" "pynput>=1.8,<2"</code>, then <code>python mightora-clicker.py</code>. macOS may ask for Accessibility permission. Keep the private code secret.</p></div>
+      <p class="helper-note"><strong>Something not working?</strong> If you see “No module named websockets” or “pynput”, install dependencies using the ZIP setup script. If a computer blocks PowerShell, respect its policy and use the standalone app instead. Your presentation window must be in focus for arrow presses to work.</p>`;
+    document.querySelector('.how-section')?.after(downloadSection);
     const companionLink = document.createElement('a');
-    companionLink.href = 'https://github.com/mightora/clicker.mightora.io/tree/main/companion';
-    companionLink.textContent = 'Get desktop companion ↗';
+    companionLink.href = '#download-helper';
+    companionLink.textContent = 'Choose a download ↓';
     companionLink.className = 'text-button';
-    companionLink.target = '_blank';
-    companionLink.rel = 'noopener noreferrer';
     document.querySelector('.desktop-connection')?.append(companionLink);
+    const miniPanel = document.createElement('div');
+    miniPanel.className = 'download-panel';
+    miniPanel.innerHTML = `<h4>Download your helper</h4><div class="mini-downloads"><a href="/downloads/clicker-companion.zip" download>Starter ZIP ↓</a><a href="/downloads/clicker.py" download>Python script ↓</a><a href="/downloads/clicker-windows.ps1" download>Windows PowerShell ↓</a><a href="https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml" target="_blank" rel="noopener noreferrer">Standalone builds ↗</a></div><p>Python ZIP: extract, run <code>setup-windows.bat</code> on Windows or <code>sh setup-mac-linux.sh</code> on macOS/Linux. See <a href="#download-helper">full setup instructions</a> below.</p>`;
+    document.querySelector('.desktop-connection')?.after(miniPanel);
     $('startSession').addEventListener('click', startSession);
     $('startSessionSecondary').addEventListener('click', startSession);
     $('endSession').addEventListener('click', endSession);

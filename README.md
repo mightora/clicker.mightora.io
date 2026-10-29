@@ -27,6 +27,16 @@ On macOS, allow the companion (Terminal or executable) **Accessibility** access 
 
 Do not share the private connection code. The phone QR is also a bearer credential; only show it to people you want to be able to operate the clicker.
 
+### Download without Python
+
+The website has a **Get your computer ready** section with three options:
+
+1. **Standalone executable** for Windows, macOS or Linux. No Python installation is required. Download it from the latest successful [Desktop companion executables workflow](https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml) (look under **Artifacts** and extract the ZIP).
+2. **Windows PowerShell**: download the [Windows script](https://clicker.mightora.io/downloads/clicker-windows.ps1), which uses built-in Windows capabilities. Respect your organisation's PowerShell execution policy; use the standalone build if scripts are restricted.
+3. **Python helper ZIP**: download the complete [starter ZIP](https://clicker.mightora.io/downloads/clicker-companion.zip). Extract and run `setup-windows.bat` on Windows or `sh setup-mac-linux.sh` in a macOS/Linux terminal. The ZIP installs Python dependencies into a private `.venv`, without changing global packages. Alternatively download [just the Python script](https://clicker.mightora.io/downloads/clicker.py).
+
+If downloading the Python script on its own, install dependencies first: `python -m pip install "websockets>=14,<17" "pynput>=1.8,<2"`, then run `python mightora-clicker.py`.
+
 ## How it works
 
 - `POST /api/sessions` creates a new independent Durable Object room and returns strong random, separate host and phone tokens.

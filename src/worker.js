@@ -5,6 +5,9 @@ const PAGE_CSS = __PAGE_CSS__;
 const PAGE_JS = __PAGE_JS__;
 const QR_JS = __QR_JS__;
 const SCRIPT_HASH = __SCRIPT_HASH__;
+const COMPANION_PY = __COMPANION_PY__;
+const COMPANION_PS = __COMPANION_PS__;
+const COMPANION_ZIP_BASE64 = __COMPANION_ZIP_BASE64__;
 
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 const ALLOWED_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
@@ -47,6 +50,25 @@ export default {
     if (request.method === 'GET' && path === '/assets/app.css') return safeResponse(PAGE_CSS, 'text/css; charset=utf-8', 'public, max-age=300');
     if (request.method === 'GET' && path === '/assets/app.js') return safeResponse(PAGE_JS, 'text/javascript; charset=utf-8', 'public, max-age=300');
     if (request.method === 'GET' && path === '/assets/qrcode.min.js') return safeResponse(QR_JS, 'text/javascript; charset=utf-8', 'public, max-age=86400');
+    if (request.method === 'GET' && path === '/downloads/clicker.py') {
+      return new Response(COMPANION_PY, {headers: {
+        'content-type':'text/x-python; charset=utf-8', 'content-disposition':'attachment; filename="mightora-clicker.py"',
+        'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'
+      }});
+    }
+    if (request.method === 'GET' && path === '/downloads/clicker-windows.ps1') {
+      return new Response(COMPANION_PS, {headers: {
+        'content-type':'application/octet-stream', 'content-disposition':'attachment; filename="mightora-clicker-windows.ps1"',
+        'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'
+      }});
+    }
+    if (request.method === 'GET' && path === '/downloads/clicker-companion.zip') {
+      const bytes = Uint8Array.from(atob(COMPANION_ZIP_BASE64), char => char.charCodeAt(0));
+      return new Response(bytes, {headers: {
+        'content-type':'application/zip', 'content-disposition':'attachment; filename="mightora-clicker-companion.zip"',
+        'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'
+      }});
+    }
     if (request.method === 'GET' && path === '/api/health') return json({ ok: true, product: 'Mightora Clicker' });
 
     if (path === '/api/sessions' && request.method === 'POST') {
