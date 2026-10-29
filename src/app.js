@@ -139,6 +139,13 @@
   const match = /^#remote\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)$/.exec(location.hash);
   if (match) initRemote(match[1], match[2]);
   else {
+    const companionLink = document.createElement('a');
+    companionLink.href = 'https://github.com/mightora/clicker.mightora.io/tree/main/companion';
+    companionLink.textContent = 'Get desktop companion ↗';
+    companionLink.className = 'text-button';
+    companionLink.target = '_blank';
+    companionLink.rel = 'noopener noreferrer';
+    document.querySelector('.desktop-connection')?.append(companionLink);
     $('startSession').addEventListener('click', startSession);
     $('startSessionSecondary').addEventListener('click', startSession);
     $('endSession').addEventListener('click', endSession);

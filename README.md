@@ -23,7 +23,7 @@ python -m pip install -r companion/requirements.txt
 python companion/clicker.py
 ```
 
-On macOS, allow the companion (Terminal or executable) **Accessibility** access to send keys. On Linux, `pynput` typically requires an X11 session; Wayland support depends on the desktop environment and may not be available. The companion does not work on locked desktops. Use the GitHub Actions **Desktop companion executables** workflow to build stand-alone binaries for all three platforms; unsigned executables may require OS approval.
+On macOS, allow the companion (Terminal or executable) **Accessibility** access to send keys. On Linux, `pynput` typically requires an X11 session; Wayland support depends on the desktop environment and may not be available. The companion does not work on locked desktops. Use the GitHub Actions **Desktop companion executables** workflow to build stand-alone binaries for all three platforms. Version tags beginning with `v` publish the downloads under GitHub Releases. Unsigned executables may require OS approval.
 
 Do not share the private connection code. The phone QR is also a bearer credential; only show it to people you want to be able to operate the clicker.
 
