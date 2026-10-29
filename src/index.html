@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101a2d">
+  <meta name="description" content="Control your presentation from your phone. Pair instantly with a QR code and use four simple arrow buttons. Open-source Mightora Clicker.">
+  <meta name="referrer" content="no-referrer">
+  <title>Mightora Clicker — Your phone. Your presentation remote.</title>
+  <meta property="og:title" content="Mightora Clicker">
+  <meta property="og:description" content="A simple, secure QR-paired presentation remote for your phone.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23101a2d'/%3E%3Cpath d='M33 12 16 32l17 20V39h15V25H33z' fill='%234edbd0'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mightora/shared-ui@main/shared.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <script>
+    // Work around indentation in the upstream shared footer YAML.
+    if (window.fetch) {
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = async (...args) => {
+        const result = await originalFetch(...args);
+        const url = String(args[0] && args[0].url || args[0] || '');
+        if (!/footer\.ya?ml(?:\?|$)/.test(url) || !result.ok) return result;
+        const raw = await result.text();
+        return new Response(raw.replace(/\t/g, '  '), {status:result.status,statusText:result.statusText,headers:result.headers});
+      };
+    }
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/gh/mightora/shared-ui@main/components.js"></script>
+  <script defer src="/assets/qrcode.min.js"></script>
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+  <div id="desktopView">
+    <mightora-header site-name="Clicker" site-url="/" logo-light="https://raw.githubusercontent.com/mightora/mightora.io/main/static/images/mightoraIoLogo4-200x900.png" logo-dark="https://raw.githubusercontent.com/mightora/mightora.io/main/static/images/mightoraIoLogo4-200x900.png" nav-links='[{"label":"How it works","url":"/#how-it-works"},{"label":"Security","url":"/#security"},{"label":"Mightora","url":"https://mightora.io","ext":true}]'></mightora-header>
+    <main>
+      <section class="hero page-wrap" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse-dot"></span> FREE, OPEN SOURCE & MADE FOR PRESENTERS</div>
+          <h1 id="pageTitle">Your phone.<br><span>Your clicker.</span></h1>
+          <p class="lead">Step away from the lectern. Advance your slides and navigate freely with four simple arrows on your phone.</p>
+          <div class="hero-tags"><span>QR code pairing</span><span>No account</span><span>Private session</span></div>
+          <div class="hero-actions"><button class="primary-btn" id="startSession" type="button"><span class="button-icon">↗</span> Start a clicker session</button><a class="text-link" href="#how-it-works">How does it work? <span aria-hidden="true">→</span></a></div>
+        </div>
+        <div class="hero-graphic" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="floating-label label-phone"><span>●</span> YOUR PHONE</div>
+          <div class="illustration-pad"><div class="illus-key key-up">↑</div><div class="illus-key key-left">←</div><div class="illus-key key-down">↓</div><div class="illus-key key-right">→</div></div>
+          <div class="floating-label label-live"><span class="live-dot"></span> WIRELESS CONTROL</div>
+          <div class="graphic-glow"></div>
+        </div>
+      </section>
+
+      <section class="session-section page-wrap" id="session" aria-labelledby="sessionTitle">
+        <div class="section-heading"><div><div class="kicker">01 / GET CONNECTED</div><h2 id="sessionTitle">Set up your session</h2></div><span class="pill" id="sessionPill">Not started</span></div>
+        <div class="setup-card" id="emptySession">
+          <div class="setup-icon" aria-hidden="true">⌁</div>
+          <div><h3>Ready when you are.</h3><p>Open this page on the computer running your presentation, then start a session. Your phone connects with one quick scan.</p></div>
+          <button class="secondary-btn" id="startSessionSecondary" type="button">Create session <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="connected-card hidden" id="activeSession">
+          <div class="qr-side"><div id="qrCode" aria-label="QR code to pair your phone"></div><p>Scan with your phone camera</p></div>
+          <div class="session-details">
+            <div class="session-topline"><span class="signal-dot"></span> SESSION LIVE <span class="divider-inline"></span> Expires in 2 hours</div>
+            <h3>Scan. Connect. Click.</h3>
+            <p>Open your camera and point it at the QR code. Your phone will instantly become your remote.</p>
+            <div class="connection-status" role="status"><span id="phoneStatusDot" class="status-dot"></span><div><strong id="phoneStatus">Waiting for your phone</strong><small id="phoneHint">Your clicker isn't connected yet.</small></div></div>
+            <div class="setup-actions"><button class="secondary-btn" id="copyRemoteLink" type="button">Copy phone link</button><button class="quiet-btn" id="endSession" type="button">End session</button></div>
+            <div class="small-meta">Session <code id="sessionCode">—</code> · <span id="commandCount">0</span> commands received <span id="lastKey" aria-live="polite"></span></div>
+          </div>
+        </div>
+        <div class="desktop-note hidden" id="nativeNote">
+          <div class="note-icon">⌨</div><div><strong>Control PowerPoint, Keynote and other desktop apps</strong><p>Browsers cannot send real system keypresses. Run the small desktop companion on your computer, then connect it to this session with the private code.</p><div class="desktop-connection"><span id="nativeStatus">Companion not connected</span><button class="text-button" id="copyDesktopCode" type="button">Copy private connection code</button></div><details><summary>How to run the companion</summary><ol><li>Download the companion from the project's GitHub repository.</li><li>Start it and paste your private connection code.</li><li>Keep your slides open, then use the phone arrows.</li></ol><p>Use <code>python clicker.py --code YOUR_CODE</code> if running from source. Python dependencies: <code>websockets</code> and <code>pynput</code>.</p></details></div>
+        </div>
+      </section>
+
+      <section class="how-section page-wrap" id="how-it-works" aria-labelledby="howTitle"><div class="kicker">02 / SIMPLE BY DESIGN</div><h2 id="howTitle">Three steps. That's it.</h2><div class="steps-grid"><article class="step"><div class="step-num">01</div><div class="step-icon">▣</div><h3>Open on your computer</h3><p>Create a temporary session here, on the computer connected to your slides.</p></article><article class="step"><div class="step-num">02</div><div class="step-icon">⌗</div><h3>Scan with your phone</h3><p>Point your camera at the QR code. No account, app installation or Bluetooth pairing.</p></article><article class="step"><div class="step-num">03</div><div class="step-icon">↔</div><h3>Run the show</h3><p>Use large, tactile arrows on your phone. For desktop slides, connect the optional computer companion.</p></article></div></section>
+
+      <section class="security-section page-wrap" id="security" aria-labelledby="securityTitle"><div class="security-copy"><div class="kicker">03 / BUILT FOR PEACE OF MIND</div><h2 id="securityTitle">Simple to use.<br>Thoughtful by default.</h2><p>Pairing links use strong random secrets. Only devices with the pairing link can send commands to your session. Sessions expire automatically after two hours, or you can end one immediately.</p><ul class="check-list"><li>No registration or personal details</li><li>No presentation content is uploaded</li><li>Only the four arrow commands are relayed</li><li>Secure HTTPS and encrypted WebSocket connections</li></ul></div><div class="security-visual" aria-hidden="true"><div class="shield">⌁<span>PRIVATE<br>PAIRING</span></div><div class="security-line"></div><div class="security-small">PHONE ↔ CLOUDFLARE ↔ COMPUTER</div></div></section>
+
+      <section class="network-note page-wrap" aria-label="Network transparency"><h2>Network transparency</h2><p>This online clicker must connect to Cloudflare to relay arrow commands between devices. The site also loads Mightora branding components from jsDelivr. We do not use advertising identifiers or store your commands after your session. To inspect requests, press F12 → Network, enable Preserve log and reload. Browser resource monitors cannot show all network activity.</p><p>Because it connects two devices in real time, a fully offline edition is not possible.</p></section>
+      <div class="open-source page-wrap"><p>Open source and independently inspectable.</p><div class="badge-row"><a href="https://github.com/mightora/clicker.mightora.io" rel="noopener noreferrer" target="_blank">Source on GitHub ↗</a><a href="https://github.com/mightora/clicker.mightora.io/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">MIT Licence ↗</a><a href="https://github.com/mightora/clicker.mightora.io/actions" rel="noopener noreferrer" target="_blank">Build & tests ↗</a><a href="https://github.com/mightora/clicker.mightora.io/security/code-scanning" rel="noopener noreferrer" target="_blank">Code scanning ↗</a></div></div>
+    </main>
+    <mightora-author><div class="author-section-overlay"><div class="author-section-inner"><div class="author-photos"><img src="https://techtweedie.github.io/images/author/ian-tweedie-sq2_hu_a380911c6f4726de.png" alt="Ian Tweedie" class="author-avatar"><img src="https://raw.githubusercontent.com/TechTweedie/techtweedie.github.io/v2/assets/images/site/main-logo.png" alt="TechTweedie" class="author-blog-logo"></div><div class="author-text"><h2 class="author-heading">Built by TechTweedie</h2><p class="author-bio">Mightora Clicker is a free tool by <strong>Ian Tweedie</strong>, also known as TechTweedie, a technology consultant and developer based in North East England. Ian makes practical tools for the community.</p><div class="author-links"><a href="https://techtweedie.github.io" class="author-link" rel="noopener" target="_blank">Blog</a><a href="https://github.com/itweedie" class="author-link" rel="noopener" target="_blank">GitHub</a></div></div></div></div></mightora-author>
+    <mightora-footer><div class="container"><div class="footer-bottom"><div class="footer-copy">Clicker by <a href="https://mightora.io">Mightora</a>. Free and open source.</div></div></div></mightora-footer>
+  </div>
+
+  <div id="remoteView" class="hidden">
+    <div class="remote-shell"><header class="remote-header"><span class="remote-brand">M<span>↗</span></span><div class="remote-brand-copy"><strong>MIGHTORA CLICKER</strong><small>YOUR PRESENTATION REMOTE</small></div><div class="remote-chip"><span id="remoteDot"></span><span id="remoteStatus">Connecting</span></div></header>
+    <main class="remote-main"><div class="remote-intro"><span class="remote-kicker">YOU'RE IN CONTROL</span><h1>Go on.<br><em>Take the stage.</em></h1><p id="remoteDescription">Connecting your phone to the presentation…</p></div>
+    <div class="remote-control" aria-label="Presentation navigation controls"><button type="button" data-key="ArrowUp" class="arrow-btn arrow-up" aria-label="Up arrow">↑</button><button type="button" data-key="ArrowLeft" class="arrow-btn arrow-left" aria-label="Previous slide, left arrow">←</button><div class="center-mark" aria-hidden="true"><span>CLICK</span><span class="tiny-signal">⌁</span></div><button type="button" data-key="ArrowRight" class="arrow-btn arrow-right" aria-label="Next slide, right arrow">→</button><button type="button" data-key="ArrowDown" class="arrow-btn arrow-down" aria-label="Down arrow">↓</button></div>
+    <p class="control-hint">Tap an arrow to navigate your slides</p><div class="remote-bottom"><span id="remoteSentCount">0 commands sent</span><button type="button" class="remote-disconnect" id="remoteDisconnect">Disconnect ↗</button></div></main>
+    <footer class="remote-footer">MADE BY <strong>MIGHTORA</strong> <span>•</span> SIMPLE TOOLS. BIG IDEAS.</footer></div>
+  </div>
+</body>
+</html>

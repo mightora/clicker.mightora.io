@@ -1,0 +1,30 @@
+name: Desktop companion executables
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  package:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: macos
+          - os: ubuntu-latest
+            name: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r companion/requirements.txt pyinstaller
+      - run: pyinstaller --clean --onefile --name mightora-clicker companion/clicker.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mightora-clicker-${{ matrix.name }}
+          path: dist/mightora-clicker*

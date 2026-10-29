@@ -1,0 +1,11 @@
+{
+  "name": "mightora-clicker",
+  "main": "./dist/worker.mjs",
+  "compatibility_date": "2026-10-29",
+  "workers_dev": true,
+  "durable_objects": {
+    "bindings": [{ "name": "CLICKER_ROOMS", "class_name": "ClickerRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ClickerRoom"] }],
+  "observability": { "enabled": true }
+}

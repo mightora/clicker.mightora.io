@@ -1,0 +1,13 @@
+{
+  "name": "mightora-clicker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "QR-paired presentation remote using Cloudflare Workers and Durable Objects",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/build.mjs && node --test",
+    "check": "node scripts/build.mjs && node --check dist/worker.mjs && python3 -m py_compile companion/clicker.py"
+  },
+  "license": "MIT"
+}
