@@ -15,21 +15,6 @@ import sys
 import time
 from urllib.parse import urlparse
 
-try:
-    from pynput.keyboard import Controller, Key
-    from websockets.sync.client import connect
-    from websockets.exceptions import ConnectionClosed
-except ImportError:
-    print('Missing dependencies. Run: python -m pip install -r requirements.txt', file=sys.stderr)
-    raise SystemExit(2)
-
-
-KEYS = {
-    'ArrowUp': Key.up,
-    'ArrowDown': Key.down,
-    'ArrowLeft': Key.left,
-    'ArrowRight': Key.right,
-}
 CODE_PATTERN = re.compile(r'^([A-Za-z0-9_-]{16})\.([A-Za-z0-9_-]{32})$')
 
 
@@ -46,9 +31,26 @@ def websocket_url(server: str, room: str) -> str:
 def run(server: str, code: str) -> None:
     match = CODE_PATTERN.fullmatch(code.strip())
     if not match:
+        if re.fullmatch(r'[A-Za-z0-9_-]{6}', code.strip()):
+            raise ValueError('That is the six-character session reference, not the private connection code. On the website, click "Copy private connection code" and paste the FULL value (two long parts separated by a dot).')
         raise ValueError('Invalid connection code. Copy the entire private code from the computer website.')
     room, token = match.groups()
     address = websocket_url(server, room)
+    # Import after validating command-line input so --help and helpful errors
+    # work even before the optional Python dependencies are installed.
+    try:
+        from pynput.keyboard import Controller, Key
+        from websockets.sync.client import connect
+        from websockets.exceptions import ConnectionClosed
+    except ImportError:
+        print('Missing dependencies. Run: python -m pip install -r requirements.txt', file=sys.stderr)
+        raise SystemExit(2)
+    keys = {
+        'ArrowUp': Key.up,
+        'ArrowDown': Key.down,
+        'ArrowLeft': Key.left,
+        'ArrowRight': Key.right,
+    }
     keyboard = Controller()
     delay = 1
     print('Connecting to your Mightora Clicker session…')
@@ -74,9 +76,9 @@ def run(server: str, code: str) -> None:
                     if message.get('type') in ('ended', 'expired'):
                         print('Session ended.'); return
                     key_name = message.get('key') if message.get('type') == 'key' else None
-                    if key_name not in KEYS:
+                    if key_name not in keys:
                         continue
-                    key = KEYS[key_name]
+                    key = keys[key_name]
                     keyboard.press(key)
                     keyboard.release(key)
                     print(f'  {key_name}', flush=True)
@@ -89,9 +91,10 @@ def run(server: str, code: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description='Mightora Clicker desktop key companion')
     parser.add_argument('--server', default='https://clicker.mightora.io', help='Website origin (default: https://clicker.mightora.io)')
+    parser.add_argument('--code', metavar='PRIVATE_CODE', help='Full private connection code (optional; omitting it avoids exposing the secret in shell history)')
     args = parser.parse_args()
     print('\nMIGHTORA CLICKER · Desktop companion\n')
-    code = getpass.getpass('Paste the private connection code from the website: ')
+    code = args.code if args.code is not None else getpass.getpass('Paste the private connection code from the website: ')
     try:
         run(args.server, code)
     except (ValueError, RuntimeError) as exc:

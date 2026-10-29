@@ -9,7 +9,7 @@ Browsers are intentionally forbidden from injecting trusted keyboard events into
 ## Presenter quick start
 
 1. Open `https://clicker.mightora.io` on the presentation computer and select **Start a clicker session**.
-2. Run the desktop companion below, copy the **private connection code** on the website, and paste it into the companion.
+2. Run the desktop companion below, click **Copy private connection code** on the website, and paste the entire private code into the companion when prompted. It consists of two long parts separated by a dot. **Do not use the six-character session reference.**
 3. Return focus to PowerPoint, Keynote, Google Slides or your presentation program.
 4. Scan the QR code using the phone's camera, wait for **Connected** and tap the arrows.
 5. End the session using the computer website after presenting.
@@ -22,6 +22,8 @@ Python 3.10 or newer is required. On Windows, macOS or Linux:
 python -m pip install -r companion/requirements.txt
 python companion/clicker.py
 ```
+
+For compatibility, the Python helper also accepts `--code PRIVATE_CODE`, but that exposes the secret in your shell history and process arguments. Running it without `--code` and pasting into the prompt is recommended.
 
 On macOS, allow the companion (Terminal or executable) **Accessibility** access to send keys. On Linux, `pynput` typically requires an X11 session; Wayland support depends on the desktop environment and may not be available. The companion does not work on locked desktops. Use the GitHub Actions **Desktop companion executables** workflow to build stand-alone binaries for all three platforms. Version tags beginning with `v` publish the downloads under GitHub Releases. Unsigned executables may require OS approval.
 

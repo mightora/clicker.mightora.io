@@ -35,6 +35,12 @@ MANUAL COMMANDS (ALL SYSTEMS)
 python -m pip install -r requirements.txt
 python clicker.py
 
+When prompted, paste the FULL private connection code copied from the site.
+The six-character session reference is not the connection code. The private
+code consists of two longer parts separated by a dot. The optional --code
+argument accepts the full code, but puts it in your terminal history; using
+the interactive prompt is recommended.
+
 If you downloaded the .py file on its own instead of this ZIP:
 python -m pip install 'websockets>=14,<17' 'pynput>=1.8,<2'
 python mightora-clicker.py
