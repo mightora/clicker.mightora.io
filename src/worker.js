@@ -47,8 +47,8 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     if (request.method === 'GET' && path === '/') return safeResponse(PAGE_HTML, 'text/html; charset=utf-8');
-    if (request.method === 'GET' && path === '/assets/app.css') return safeResponse(PAGE_CSS, 'text/css; charset=utf-8', 'public, max-age=300');
-    if (request.method === 'GET' && path === '/assets/app.js') return safeResponse(PAGE_JS, 'text/javascript; charset=utf-8', 'public, max-age=300');
+    if (request.method === 'GET' && path === '/assets/app.css') return safeResponse(PAGE_CSS, 'text/css; charset=utf-8');
+    if (request.method === 'GET' && path === '/assets/app.js') return safeResponse(PAGE_JS, 'text/javascript; charset=utf-8');
     if (request.method === 'GET' && path === '/assets/qrcode.min.js') return safeResponse(QR_JS, 'text/javascript; charset=utf-8', 'public, max-age=86400');
     if (request.method === 'GET' && path === '/downloads/clicker.py') {
       return new Response(COMPANION_PY, {headers: {
