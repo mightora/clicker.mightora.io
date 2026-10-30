@@ -44,7 +44,7 @@ If downloading the Python script on its own, install dependencies first: `python
 
 **The public portable EXE is currently unsigned.** Windows SmartScreen and some organisation policies may warn about or block it. This is expected for an unfamiliar unsigned executable, not evidence that it is safe or unsafe. Do not bypass your organisation's protections. Verify the [release checksums](https://github.com/mightora/clicker.mightora.io/releases/latest) and inspect the public source. Every release includes `SHA256SUMS.txt` for the binary files.
 
-For an easier mainstream Windows experience, the next release step is to acquire a trusted publisher code-signing identity (Microsoft Azure Artifact Signing or an organisation-validated certificate), sign and timestamp the executable **before** publishing it, and verify the signature. A signature provides publisher identity and integrity, not a guarantee of safety. Even properly signed new software may show SmartScreen warnings until a positive reputation is established; an EV certificate does not automatically bypass SmartScreen. See [release and signing guidance](docs/RELEASING.md).
+The desktop release workflow now includes **Microsoft Azure Artifact Signing** with short-lived GitHub OIDC authentication, signature and timestamp verification, and a fail-closed signing gate. It will start signing Windows releases once the publisher completes Azure identity verification and configures the account, certificate profile and GitHub Actions variables. Until then, public downloads remain explicitly unsigned. A signature provides publisher identity and file integrity, not a guarantee of safety or immediate SmartScreen approval. See the step-by-step [Azure activation guide](docs/RELEASING.md).
 
 ## How it works
 
@@ -75,7 +75,7 @@ The GitHub Actions deployment needs repository secrets:
 - `CLOUDFLARE_API_TOKEN` — token with Workers Scripts edit and related permissions.
 - `CLOUDFLARE_ACCOUNT_ID` — the correct Cloudflare account ID.
 
-Build, security audit and CodeQL workflows are included. Each successful push to `main` builds and tests all three portable companions, creates SHA-256 checksums, and publishes a versioned [GitHub Release](https://github.com/mightora/clicker.mightora.io/releases). The release is gated on automated tests and dependency auditing. Executables remain unsigned until a verified signing identity is configured. Avoid describing the badges as independent certifications or a guarantee of security.
+Build, security audit and CodeQL workflows are included. Each successful push to `main` builds and tests all three portable companions, creates SHA-256 checksums, and publishes a versioned [GitHub Release](https://github.com/mightora/clicker.mightora.io/releases). Windows signing is optional until activated; once enabled, a signing error blocks publication, while each release states whether the actual Windows EXE was signed. The release is gated on automated tests and dependency auditing. Avoid describing badges as independent certifications or a guarantee of security.
 
 ## Development and testing
 

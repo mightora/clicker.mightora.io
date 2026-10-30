@@ -28,6 +28,9 @@ jobs:
 
   package:
     needs: quality-gate
+    permissions:
+      contents: read
+      id-token: write # Short-lived Azure OIDC token; no stored signing keys.
     strategy:
       fail-fast: false
       matrix:
@@ -56,10 +59,81 @@ jobs:
           else
             ./dist/mightora-clicker-${{ matrix.name }} --help
           fi
+      - name: Check Artifact Signing configuration
+        if: matrix.name == 'windows' && vars.ARTIFACT_SIGNING_ENABLED == 'true'
+        shell: pwsh
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          SIGNING_ENDPOINT: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
+          SIGNING_ACCOUNT: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          SIGNING_PROFILE: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+        run: |
+          $required = @('AZURE_CLIENT_ID', 'AZURE_TENANT_ID', 'AZURE_SUBSCRIPTION_ID', 'SIGNING_ENDPOINT', 'SIGNING_ACCOUNT', 'SIGNING_PROFILE')
+          foreach ($name in $required) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+              throw "Artifact Signing is enabled but $name is not configured. Publication is blocked."
+            }
+          }
+      - name: Sign in to Azure with OpenID Connect
+        if: matrix.name == 'windows' && vars.ARTIFACT_SIGNING_ENABLED == 'true'
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Sign Windows EXE with Azure Artifact Signing
+        if: matrix.name == 'windows' && vars.ARTIFACT_SIGNING_ENABLED == 'true'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+          files: ${{ github.workspace }}\dist\mightora-clicker-windows.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          exclude-environment-credential: true
+          exclude-workload-identity-credential: true
+          exclude-managed-identity-credential: true
+          exclude-shared-token-cache-credential: true
+          exclude-visual-studio-credential: true
+          exclude-visual-studio-code-credential: true
+          exclude-azure-cli-credential: false
+          exclude-azure-powershell-credential: true
+          exclude-azure-developer-cli-credential: true
+          exclude-interactive-browser-credential: true
+      - name: Verify signed executable and timestamp
+        if: matrix.name == 'windows' && vars.ARTIFACT_SIGNING_ENABLED == 'true'
+        shell: pwsh
+        run: |
+          $file = Join-Path $env:GITHUB_WORKSPACE 'dist/mightora-clicker-windows.exe'
+          $signature = Get-AuthenticodeSignature -FilePath $file -ErrorAction Stop
+          if ($signature.Status -ne 'Valid' -or $null -eq $signature.SignerCertificate) {
+            throw "Windows executable signature verification failed: $($signature.Status)"
+          }
+          if ($null -eq $signature.TimeStamperCertificate) {
+            throw 'Windows executable has no verified signing timestamp.'
+          }
+          Write-Host "Verified Authenticode publisher: $($signature.SignerCertificate.Subject)"
+      - name: Record Windows signing status for release notes
+        if: matrix.name == 'windows'
+        shell: pwsh
+        env:
+          SIGNING_ENABLED: ${{ vars.ARTIFACT_SIGNING_ENABLED }}
+        run: |
+          if ($env:SIGNING_ENABLED -eq 'true') {
+            'signed-and-verified' | Set-Content -Path 'dist/windows-signing-status.txt'
+          } else {
+            'unsigned' | Set-Content -Path 'dist/windows-signing-status.txt'
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: mightora-clicker-${{ matrix.name }}
-          path: dist/mightora-clicker-*
+          path: |
+            dist/mightora-clicker-*
+            dist/windows-signing-status.txt
           if-no-files-found: error
           retention-days: 14
 
@@ -79,6 +153,29 @@ jobs:
         run: |
           cd release
           sha256sum mightora-clicker-* > SHA256SUMS.txt
+      - name: Describe the actual Windows signing state
+        shell: bash
+        run: |
+          test -f release/windows-signing-status.txt
+          if grep -qx 'signed-and-verified' release/windows-signing-status.txt; then
+            SIGNING_NOTE='**Windows EXE: digitally signed and timestamped using Microsoft Azure Artifact Signing.** The release workflow verified its Authenticode signature before publication.'
+          elif grep -qx 'unsigned' release/windows-signing-status.txt; then
+            SIGNING_NOTE='**Windows EXE: unsigned.** SmartScreen or organisational policy may warn or block it. Artifact Signing is not yet activated for this repository.'
+          else
+            echo 'Unknown Windows signing state; refusing to publish.' >&2
+            exit 1
+          fi
+          {
+            echo 'Portable companions for Windows, macOS and Linux. No Python installation required.'
+            echo
+            echo "$SIGNING_NOTE"
+            echo
+            echo 'macOS and Linux companions are unsigned. Only run software from a source you trust. SHA256SUMS.txt contains checksums for verifying downloads, calculated after any signing step.'
+            echo
+            echo 'A valid signature identifies the publisher and protects file integrity; it does not guarantee that SmartScreen will allow a new app immediately.'
+            echo
+            echo 'View the source, automated checks and licence in this repository.'
+          } > release/RELEASE_NOTES.md
       - name: Publish versioned public desktop downloads
         uses: softprops/action-gh-release@v2
         with:
@@ -87,12 +184,7 @@ jobs:
           name: Mightora Clicker v1.0.${{ github.run_number }}
           make_latest: true
           generate_release_notes: true
-          body: |
-            Portable companions for Windows, macOS and Linux. No Python installation required.
-
-            **These executables are currently unsigned.** They may trigger SmartScreen, Gatekeeper or organisation policy restrictions. Only run software from a source you trust. SHA256SUMS.txt contains checksums for verifying downloads.
-
-            View the source, checks and licence in this repository. A valid code-signing certificate is required before these can be described as signed or trusted-publisher downloads.
+          body_path: release/RELEASE_NOTES.md
           files: |
             release/mightora-clicker-*
             release/SHA256SUMS.txt
