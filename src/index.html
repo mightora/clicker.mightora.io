@@ -33,8 +33,18 @@
   <script defer src="/assets/app.js"></script>
 </head>
 <body>
+  <svg class="svg-symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4" /></symbol>
+    <symbol id="icon-computer" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4" /></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2" /></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="icon-qr" viewBox="0 0 24 24"><rect x="2" y="2" width="7" height="7" rx="1"/><rect x="15" y="2" width="7" height="7" rx="1"/><rect x="2" y="15" width="7" height="7" rx="1"/><path d="M15 15h3v3h-3zm7 0v3m-4 4h4v-2m-7 2v-2"/></symbol>
+    <symbol id="icon-arrows" viewBox="0 0 24 24"><path d="M12 3v18m0-18-4 4m4-4 4 4m-4 14-4-4m4 4 4-4M3 12h18M3 12l4-4m-4 4 4 4m14-4-4-4m4 4-4 4"/></symbol>
+  </svg>
   <div id="desktopView">
     <mightora-header site-name="Clicker" site-url="/" logo-light="https://raw.githubusercontent.com/mightora/mightora.io/main/static/images/mightoraIoLogo4-200x900.png" logo-dark="https://raw.githubusercontent.com/mightora/mightora.io/main/static/images/mightoraIoLogo4-200x900.png" nav-links='[{"label":"How it works","url":"/#how-it-works"},{"label":"Security","url":"/#security"},{"label":"Mightora","url":"https://mightora.io","ext":true}]'></mightora-header>
+    <nav class="quick-jump-nav" aria-label="Clicker quick steps"><a href="#download-helper">1. Get the helper</a><a href="#session">2. Copy your code</a><a href="#how-it-works">3. Use your phone</a></nav>
     <main>
       <section class="hero page-wrap" aria-labelledby="pageTitle">
         <div class="hero-copy">
@@ -53,8 +63,43 @@
         </div>
       </section>
 
+      <section class="download-helper page-wrap" id="download-helper" aria-labelledby="downloadHeading">
+        <div class="download-heading"><div><div class="kicker">STEP 1 OF 3 · ON YOUR COMPUTER</div><h2 id="downloadHeading">Get your computer ready.</h2><p>Only the computer needs a small helper to press the arrow keys in PowerPoint or other apps. Your phone needs no download.</p></div></div>
+        <div class="download-path">
+          <div class="download-primary">
+            <h3>What kind of computer are you using?</h3>
+            <div class="platform-options" role="group" aria-label="Choose your computer">
+              <button class="platform-choice selected" data-platform="windows" type="button" aria-pressed="true">Windows</button>
+              <button class="platform-choice" data-platform="macos" type="button" aria-pressed="false">Mac</button>
+              <button class="platform-choice" data-platform="linux" type="button" aria-pressed="false">Linux</button>
+            </div>
+            <div class="recommended-download">
+              <svg class="download-illustration" aria-hidden="true"><use href="#icon-computer"></use></svg>
+              <div>
+                <span class="recommended-badge" id="downloadBadge">WINDOWS · PORTABLE · NO PYTHON</span>
+                <h4 id="downloadTitle">Get the Windows desktop app</h4>
+                <p id="downloadDescription">A single portable EXE. No Python, installer or administrator rights required to start it on a computer that permits unsigned apps.</p>
+                <a id="mainDownload" class="helper-btn emphasis" href="https://github.com/mightora/clicker.mightora.io/releases/latest/download/mightora-clicker-windows.exe"><svg class="icon-svg" aria-hidden="true"><use href="#icon-download"></use></svg><span id="mainDownloadLabel">Download Windows EXE</span></a>
+                <p class="download-hint" id="downloadHint">Unsigned for now. Windows may warn or block it; respect your computer's security policy.</p>
+              </div>
+            </div>
+            <div class="start-instructions"><strong>Then:</strong><ol id="downloadSteps"><li>Open the downloaded <strong>mightora-clicker-windows.exe</strong> on your computer.</li><li>Start a session below, then click <strong>Copy private connection code</strong>.</li><li>Paste the code into the EXE when asked, and return to your slides.</li></ol></div>
+          </div>
+          <aside class="download-alternatives">
+            <svg class="download-aside-icon" aria-hidden="true"><use href="#icon-computer"></use></svg>
+            <h3>Other download options</h3>
+            <p>Prefer a script, or want to inspect the build? All versions are open source.</p>
+            <a class="alternate-link" href="https://github.com/mightora/clicker.mightora.io/releases/latest" target="_blank" rel="noopener noreferrer">View the latest release and checksums ↗</a>
+            <div class="other-downloads"><a href="/downloads/clicker-windows.ps1" download>Windows PowerShell ↓</a></div>
+            <details><summary>How do I check what I downloaded?</summary><ol><li>Open the latest release above to view all portable downloads and the <strong>SHA256SUMS.txt</strong> file.</li><li>Check the file's hash against its entry in that list. On Windows, use <code>Get-FileHash .\mightora-clicker-windows.exe -Algorithm SHA256</code> in PowerShell.</li><li>Only run a download you trust. Current builds are unsigned, so your system may refuse to run them.</li></ol></details>
+            <details><summary>Other options: Python and setup ZIP</summary><p>If you prefer Python, get the starter ZIP, extract it and run its setup script. Or download just the script.</p><div class="other-downloads"><a href="/downloads/clicker-companion.zip" download>Python starter ZIP ↓</a><a href="/downloads/clicker.py" download>Python script ↓</a></div></details>
+            <p class="download-safety">If your organisation blocks scripts or unsigned apps, follow its security rules.</p>
+          </aside>
+        </div>
+      </section>
+
       <section class="session-section page-wrap" id="session" aria-labelledby="sessionTitle">
-        <div class="section-heading"><div><div class="kicker">01 / GET CONNECTED</div><h2 id="sessionTitle">Set up your session</h2></div><span class="pill" id="sessionPill">Not started</span></div>
+        <div class="section-heading"><div><div class="kicker">STEP 2 OF 3 · CONNECT THIS COMPUTER</div><h2 id="sessionTitle">Start and connect.</h2></div><span class="pill" id="sessionPill">Not started</span></div>
         <div class="setup-card" id="emptySession">
           <div class="setup-icon" aria-hidden="true">⌁</div>
           <div><h3>Ready when you are.</h3><p>Open this page on the computer running your presentation, then start a session. Your phone connects with one quick scan.</p></div>
@@ -68,27 +113,41 @@
             <p>Open your camera and point it at the QR code. Your phone will instantly become your remote.</p>
             <div class="connection-status" role="status"><span id="phoneStatusDot" class="status-dot"></span><div><strong id="phoneStatus">Waiting for your phone</strong><small id="phoneHint">Your clicker isn't connected yet.</small></div></div>
             <div class="setup-actions"><button class="secondary-btn" id="copyRemoteLink" type="button">Copy phone link</button><button class="quiet-btn" id="endSession" type="button">End session</button></div>
-            <div class="small-meta">Session reference (not a pairing code) <code id="sessionCode">—</code> · <span id="commandCount">0</span> commands received <span id="lastKey" aria-live="polite"></span></div>
+            <div class="small-meta"><span id="commandCount">0</span> commands received <span id="lastKey" aria-live="polite"></span></div>
           </div>
         </div>
         <div class="desktop-note hidden" id="nativeNote">
-          <div class="note-icon">⌨</div><div><strong>Control PowerPoint, Keynote and other desktop apps</strong><p>Browsers cannot send real system keypresses. Run the small desktop companion on your computer, then connect it using the <strong>full private connection code</strong>, not the short session reference.</p><div class="desktop-connection"><span id="nativeStatus">Companion not connected</span><button class="text-button" id="copyDesktopCode" type="button">Copy private connection code</button></div><details><summary>How to run the companion</summary><ol><li><a href="#download-helper">Download a desktop companion</a> (Windows, macOS or Linux).</li><li>Run it. If using Python, type <code>python clicker.py</code>.</li><li>Click <strong>Copy private connection code</strong> above and paste the entire value when prompted. It has two long parts separated by a dot.</li><li>Keep your slides open, then use the phone arrows.</li></ol><p>Running from Python source requires <code>websockets</code> and <code>pynput</code>. <code>--code</code> is supported, but pasting the secret when prompted keeps it out of your command history.</p></details></div>
+          <div class="pairing-panel">
+            <div class="pairing-intro"><span class="pairing-step">2</span><div><h3>Copy the private connection code</h3><p>Run the helper you downloaded in Step 1. When it says <strong>“Paste your private connection code”</strong>, use the code below.</p></div></div>
+            <div class="private-code-box"><div><strong>YOUR PRIVATE COMPUTER CODE</strong><code id="desktopCodePreview" aria-label="Private connection code is hidden">••••••••••••••••.••••••••••••••••••••••••••••••••</code></div><button class="reveal-btn" id="toggleDesktopCode" type="button" aria-pressed="false">Show</button></div>
+            <button class="copy-code-button" id="copyDesktopCode" type="button"><svg class="icon-svg" aria-hidden="true"><use href="#icon-copy"></use></svg><span id="copyDesktopCodeLabel">Copy private connection code</span></button>
+            <p class="copy-guidance" id="copyCodeMessage" role="status" aria-live="polite">This is the full code the helper needs. Keep it private and paste it into the helper with Ctrl+V (or Cmd+V on Mac).</p>
+            <div class="desktop-connection"><span id="nativeStatus">Waiting for the computer helper to connect</span><a href="#download-helper">Need the helper? Go to Step 1 ↑</a></div>
+            <details class="pairing-help"><summary>What if the helper won't connect?</summary><p>Make sure you copied the <strong>entire private code</strong>, with a dot between its two long parts. Do not enter a six-character session reference. If you use Python, run <code>python clicker.py</code> and paste the code when prompted.</p></details>
+          </div>
         </div>
       </section>
 
-      <section class="how-section page-wrap" id="how-it-works" aria-labelledby="howTitle"><div class="kicker">02 / SIMPLE BY DESIGN</div><h2 id="howTitle">Three steps. That's it.</h2><div class="steps-grid"><article class="step"><div class="step-num">01</div><div class="step-icon">▣</div><h3>Open on your computer</h3><p>Create a temporary session here, on the computer connected to your slides.</p></article><article class="step"><div class="step-num">02</div><div class="step-icon">⌗</div><h3>Scan with your phone</h3><p>Point your camera at the QR code. No account, app installation or Bluetooth pairing.</p></article><article class="step"><div class="step-num">03</div><div class="step-icon">↔</div><h3>Run the show</h3><p>Use large, tactile arrows on your phone. For desktop slides, connect the optional computer companion.</p></article></div></section>
+      <section class="how-section page-wrap" id="how-it-works" aria-labelledby="howTitle"><div class="kicker">STEP 3 OF 3 · ON YOUR PHONE</div><h2 id="howTitle">Scan, then click.</h2><div class="steps-grid"><article class="step"><div class="step-num">01</div><svg class="step-svg" aria-hidden="true"><use href="#icon-computer"></use></svg><h3>Open the helper</h3><p>Start the downloaded helper on the computer showing your slides.</p></article><article class="step"><div class="step-num">02</div><svg class="step-svg" aria-hidden="true"><use href="#icon-copy"></use></svg><h3>Paste your private code</h3><p>Use the large <strong>Copy private connection code</strong> button above. Paste it into the helper.</p></article><article class="step"><div class="step-num">03</div><svg class="step-svg" aria-hidden="true"><use href="#icon-qr"></use></svg><h3>Scan with your phone</h3><p>Point your phone camera at the QR code above. Tap the arrows to move through your slides.</p></article></div></section>
 
       <section class="security-section page-wrap" id="security" aria-labelledby="securityTitle"><div class="security-copy"><div class="kicker">03 / BUILT FOR PEACE OF MIND</div><h2 id="securityTitle">Simple to use.<br>Thoughtful by default.</h2><p>Pairing links use strong random secrets. Only devices with the pairing link can send commands to your session. Sessions expire automatically after two hours, or you can end one immediately.</p><ul class="check-list"><li>No registration or personal details</li><li>No presentation content is uploaded</li><li>Only the four arrow commands are relayed</li><li>Secure HTTPS and encrypted WebSocket connections</li></ul></div><div class="security-visual" aria-hidden="true"><div class="shield">⌁<span>PRIVATE<br>PAIRING</span></div><div class="security-line"></div><div class="security-small">PHONE ↔ CLOUDFLARE ↔ COMPUTER</div></div></section>
 
       <section class="network-note page-wrap" aria-label="Network transparency"><h2>Network transparency</h2><p>This online clicker must connect to Cloudflare to relay arrow commands between devices. The site also loads Mightora branding components from jsDelivr. We do not use advertising identifiers or store your commands after your session. To inspect requests, press F12 → Network, enable Preserve log and reload. Browser resource monitors cannot show all network activity.</p><p>Because it connects two devices in real time, a fully offline edition is not possible.</p></section>
-      <div class="open-source page-wrap"><p>Open source and independently inspectable.</p><div class="badge-row"><a href="https://github.com/mightora/clicker.mightora.io" rel="noopener noreferrer" target="_blank">Source on GitHub ↗</a><a href="https://github.com/mightora/clicker.mightora.io/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">MIT Licence ↗</a><a href="https://github.com/mightora/clicker.mightora.io/actions" rel="noopener noreferrer" target="_blank">Build & tests ↗</a><a href="https://github.com/mightora/clicker.mightora.io/security/code-scanning" rel="noopener noreferrer" target="_blank">Code scanning ↗</a></div></div>
     </main>
     <mightora-author><div class="author-section-overlay"><div class="author-section-inner"><div class="author-photos"><img src="https://techtweedie.github.io/images/author/ian-tweedie-sq2_hu_a380911c6f4726de.png" alt="Ian Tweedie" class="author-avatar"><img src="https://raw.githubusercontent.com/TechTweedie/techtweedie.github.io/v2/assets/images/site/main-logo.png" alt="TechTweedie" class="author-blog-logo"></div><div class="author-text"><h2 class="author-heading">Built by TechTweedie</h2><p class="author-bio">Mightora Clicker is a free tool by <strong>Ian Tweedie</strong>, also known as TechTweedie, a technology consultant and developer based in North East England. Ian makes practical tools for the community.</p><div class="author-links"><a href="https://techtweedie.github.io" class="author-link" rel="noopener" target="_blank">Blog</a><a href="https://github.com/itweedie" class="author-link" rel="noopener" target="_blank">GitHub</a></div></div></div></div></mightora-author>
+    <div class="open-source page-wrap" aria-label="Open-source quality evidence"><p>Open source, independently inspectable. These badges show live workflow status and do not guarantee the absence of vulnerabilities.</p><div class="badge-row">
+      <a href="https://github.com/mightora/clicker.mightora.io/actions/workflows/checks.yml" target="_blank" rel="noopener noreferrer"><img src="https://github.com/mightora/clicker.mightora.io/actions/workflows/checks.yml/badge.svg" alt="Build and tests workflow status" loading="lazy"></a>
+      <a href="https://github.com/mightora/clicker.mightora.io/actions/workflows/codeql.yml" target="_blank" rel="noopener noreferrer"><img src="https://github.com/mightora/clicker.mightora.io/actions/workflows/codeql.yml/badge.svg" alt="CodeQL security analysis workflow status" loading="lazy"></a>
+      <a href="https://github.com/mightora/clicker.mightora.io/actions/workflows/security-audit.yml" target="_blank" rel="noopener noreferrer"><img src="https://github.com/mightora/clicker.mightora.io/actions/workflows/security-audit.yml/badge.svg" alt="Security audit workflow status" loading="lazy"></a>
+      <a href="https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml" target="_blank" rel="noopener noreferrer"><img src="https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml/badge.svg" alt="Portable desktop build workflow status" loading="lazy"></a>
+      <a href="https://github.com/mightora/clicker.mightora.io/blob/main/LICENSE" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/licence-MIT-blue" alt="MIT open-source licence" loading="lazy"></a>
+      <a href="https://github.com/mightora/clicker.mightora.io" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/source-GitHub-24292f?logo=github" alt="Source code on GitHub" loading="lazy"></a>
+    </div>
     <mightora-footer><div class="container"><div class="footer-bottom"><div class="footer-copy">Clicker by <a href="https://mightora.io">Mightora</a>. Free and open source.</div></div></div></mightora-footer>
   </div>
 
   <div id="remoteView" class="hidden">
-    <div class="remote-shell"><header class="remote-header"><span class="remote-brand">M<span>↗</span></span><div class="remote-brand-copy"><strong>MIGHTORA CLICKER</strong><small>YOUR PRESENTATION REMOTE</small></div><div class="remote-chip"><span id="remoteDot"></span><span id="remoteStatus">Connecting</span></div></header>
+    <div class="remote-shell"><header class="remote-header"><a class="remote-brand" href="https://mightora.io" target="_blank" rel="noopener noreferrer" aria-label="Mightora website"><img src="https://raw.githubusercontent.com/mightora/mightora.io/main/static/images/mightoraIoLogo4-200x900.png" alt="Mightora"></a><div class="remote-brand-copy"><strong>CLICKER</strong><small>YOUR PRESENTATION REMOTE</small></div><div class="remote-chip"><span id="remoteDot"></span><span id="remoteStatus">Connecting</span></div></header>
     <main class="remote-main"><div class="remote-intro"><span class="remote-kicker">YOU'RE IN CONTROL</span><h1>Go on.<br><em>Take the stage.</em></h1><p id="remoteDescription">Connecting your phone to the presentation…</p></div>
     <div class="remote-control" aria-label="Presentation navigation controls"><button type="button" data-key="ArrowUp" class="arrow-btn arrow-up" aria-label="Up arrow">↑</button><button type="button" data-key="ArrowLeft" class="arrow-btn arrow-left" aria-label="Previous slide, left arrow">←</button><div class="center-mark" aria-hidden="true"><span>CLICK</span><span class="tiny-signal">⌁</span></div><button type="button" data-key="ArrowRight" class="arrow-btn arrow-right" aria-label="Next slide, right arrow">→</button><button type="button" data-key="ArrowDown" class="arrow-btn arrow-down" aria-label="Down arrow">↓</button></div>
     <p class="control-hint">Tap an arrow to navigate your slides</p><div class="remote-bottom"><span id="remoteSentCount">0 commands sent</span><button type="button" class="remote-disconnect" id="remoteDisconnect">Disconnect ↗</button></div></main>

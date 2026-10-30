@@ -8,10 +8,10 @@ Browsers are intentionally forbidden from injecting trusted keyboard events into
 
 ## Presenter quick start
 
-1. Open `https://clicker.mightora.io` on the presentation computer and select **Start a clicker session**.
-2. Run the desktop companion below, click **Copy private connection code** on the website, and paste the entire private code into the companion when prompted. It consists of two long parts separated by a dot. **Do not use the six-character session reference.**
+1. Open `https://clicker.mightora.io` on the presentation computer. At **Step 1**, choose Windows, Mac or Linux and download a desktop helper. No app is required on the phone.
+2. Start the helper. At **Step 2** on the website, select **Start a clicker session**, then use the large **Copy private connection code** button. Paste that full code into the helper when prompted. The code is masked on screen until you select **Show**; it has two long parts separated by a dot. There is no six-character reference to copy.
 3. Return focus to PowerPoint, Keynote, Google Slides or your presentation program.
-4. Scan the QR code using the phone's camera, wait for **Connected** and tap the arrows.
+4. At **Step 3**, scan the QR code using the phone's camera, wait for **Connected**, and tap the arrows.
 5. End the session using the computer website after presenting.
 
 ### Run the companion from source
@@ -31,13 +31,20 @@ Do not share the private connection code. The phone QR is also a bearer credenti
 
 ### Download without Python
 
-The website has a **Get your computer ready** section with three options:
+The website has a **Get your computer ready** section immediately after the introduction, with simple Windows, Mac and Linux choices, illustrated setup steps and a separate panel for alternative downloads:
 
-1. **Standalone executable** for Windows, macOS or Linux. No Python installation is required. Download it from the latest successful [Desktop companion executables workflow](https://github.com/mightora/clicker.mightora.io/actions/workflows/desktop-releases.yml) (look under **Artifacts** and extract the ZIP).
-2. **Windows PowerShell**: download the [Windows script](https://clicker.mightora.io/downloads/clicker-windows.ps1), which uses built-in Windows capabilities. Respect your organisation's PowerShell execution policy; use the standalone build if scripts are restricted.
-3. **Python helper ZIP**: download the complete [starter ZIP](https://clicker.mightora.io/downloads/clicker-companion.zip). Extract and run `setup-windows.bat` on Windows or `sh setup-mac-linux.sh` in a macOS/Linux terminal. The ZIP installs Python dependencies into a private `.venv`, without changing global packages. Alternatively download [just the Python script](https://clicker.mightora.io/downloads/clicker.py).
+1. **Portable Windows EXE (recommended):** [download the latest Windows EXE](https://github.com/mightora/clicker.mightora.io/releases/latest/download/mightora-clicker-windows.exe). No Python, installer or administrator permissions are required to *download* it, although device policies may block execution of unsigned apps. Open it and paste the private connection code when prompted.
+2. **Portable macOS/Linux executables:** choose your OS on the website, or visit the [latest public release](https://github.com/mightora/clicker.mightora.io/releases/latest). macOS may require Accessibility permissions; on Linux the executable bit may need to be set and X11 generally works best.
+3. **Windows PowerShell:** download the [Windows script](https://clicker.mightora.io/downloads/clicker-windows.ps1), which uses built-in Windows capabilities. Right-click and choose **Run with PowerShell** if your computer permits it. Respect your organisation's execution policy.
+4. **Python helper ZIP**: download the complete [starter ZIP](https://clicker.mightora.io/downloads/clicker-companion.zip). Extract and run `setup-windows.bat` on Windows or `sh setup-mac-linux.sh` in a macOS/Linux terminal. The ZIP installs Python dependencies into a private `.venv`, without changing global packages. Alternatively download [just the Python script](https://clicker.mightora.io/downloads/clicker.py).
 
 If downloading the Python script on its own, install dependencies first: `python -m pip install "websockets>=14,<17" "pynput>=1.8,<2"`, then run `python mightora-clicker.py`.
+
+### Windows safety and code signing
+
+**The public portable EXE is currently unsigned.** Windows SmartScreen and some organisation policies may warn about or block it. This is expected for an unfamiliar unsigned executable, not evidence that it is safe or unsafe. Do not bypass your organisation's protections. Verify the [release checksums](https://github.com/mightora/clicker.mightora.io/releases/latest) and inspect the public source. Every release includes `SHA256SUMS.txt` for the binary files.
+
+For an easier mainstream Windows experience, the next release step is to acquire a trusted publisher code-signing identity (Microsoft Azure Artifact Signing or an organisation-validated certificate), sign and timestamp the executable **before** publishing it, and verify the signature. A signature provides publisher identity and integrity, not a guarantee of safety. Even properly signed new software may show SmartScreen warnings until a positive reputation is established; an EV certificate does not automatically bypass SmartScreen. See [release and signing guidance](docs/RELEASING.md).
 
 ## How it works
 
@@ -68,7 +75,7 @@ The GitHub Actions deployment needs repository secrets:
 - `CLOUDFLARE_API_TOKEN` — token with Workers Scripts edit and related permissions.
 - `CLOUDFLARE_ACCOUNT_ID` — the correct Cloudflare account ID.
 
-Build and security workflows are included. Tag `v1.0.0` or run the desktop packaging workflow to produce binaries. Review the artifacts before publishing them as a release.
+Build, security audit and CodeQL workflows are included. Each successful push to `main` builds and tests all three portable companions, creates SHA-256 checksums, and publishes a versioned [GitHub Release](https://github.com/mightora/clicker.mightora.io/releases). The release is gated on automated tests and dependency auditing. Executables remain unsigned until a verified signing identity is configured. Avoid describing the badges as independent certifications or a guarantee of security.
 
 ## Development and testing
 

@@ -74,7 +74,8 @@ def run(server: str, code: str) -> None:
                     except (TypeError, ValueError):
                         continue
                     if message.get('type') in ('ended', 'expired'):
-                        print('Session ended.'); return
+                        print('Session ended.')
+                        return
                     key_name = message.get('key') if message.get('type') == 'key' else None
                     if key_name not in keys:
                         continue

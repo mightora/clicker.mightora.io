@@ -37,7 +37,7 @@ function safeResponse(body, type, maxAge = 'no-store') {
       'referrer-policy': 'no-referrer',
       'permissions-policy': 'camera=(), microphone=(), geolocation=()',
       'x-frame-options': 'DENY',
-      'content-security-policy': `default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self' 'sha256-${SCRIPT_HASH}' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://raw.githubusercontent.com https://techtweedie.github.io https://cdn.jsdelivr.net; connect-src 'self' wss: https://raw.githubusercontent.com https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net`,
+      'content-security-policy': `default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self' 'sha256-${SCRIPT_HASH}' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://raw.githubusercontent.com https://techtweedie.github.io https://cdn.jsdelivr.net https://github.com https://img.shields.io; connect-src 'self' wss: https://raw.githubusercontent.com https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net`,
     },
   });
 }

@@ -39,14 +39,37 @@ test('serves app assets with a restrictive CSP and no-cache HTML', async () => {
   const env = {};
   const index = await worker.fetch(new Request('https://example.org/'), env);
   assert.equal(index.status, 200);
-  assert.match(await index.text(), /Your phone\./);
+  const html = await index.text();
+  assert.match(html, /Your phone\./);
+  assert.match(html, /id="download-helper"/);
+  assert.match(html, /id="copyDesktopCode"/);
+  assert.match(html, /id="desktopCodePreview"/);
+  assert.match(html, /aria-label="Choose your computer"/);
+  assert.match(html, /releases\/latest\/download\/mightora-clicker-windows\.exe/);
+  assert.match(html, /id="copyDesktopCodeLabel"/);
+  assert.doesNotMatch(html, /id="sessionCode"/);
+  assert.match(html, /<nav class="quick-jump-nav"/);
+  assert.match(html, /<mightora-header[^>]+logo-light="https:\/\/raw\.githubusercontent\.com\/mightora\/mightora\.io\/main\/static\/images\/mightoraIoLogo4-200x900\.png"/);
+  assert.match(html, /class="remote-brand"[^>]*><img src="https:\/\/raw\.githubusercontent\.com\/mightora\/mightora\.io\/main\/static\/images\/mightoraIoLogo4-200x900\.png"/);
+  assert.match(html, /<symbol id="icon-copy"/);
+  assert.match(html, /actions\/workflows\/checks\.yml\/badge\.svg/);
+  assert.match(html, /actions\/workflows\/codeql\.yml\/badge\.svg/);
+  assert.match(html, /actions\/workflows\/security-audit\.yml\/badge\.svg/);
   assert.match(index.headers.get('content-security-policy'), /sha256-/);
   assert.match(index.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+  assert.match(index.headers.get('content-security-policy'), /https:\/\/github\.com/);
+  assert.match(index.headers.get('content-security-policy'), /https:\/\/img\.shields\.io/);
   assert.equal(index.headers.get('cache-control'), 'no-store');
   for (const asset of ['app.js', 'app.css', 'qrcode.min.js']) {
     const res = await worker.fetch(new Request(`https://example.org/assets/${asset}`), env);
     assert.equal(res.status, 200);
-    assert.ok((await res.text()).length > 100);
+    const body = await res.text();
+    assert.ok(body.length > 100);
+    if (asset === 'app.js') assert.match(body, /function choosePlatform\(platform\)/);
+    if (asset === 'app.css') {
+      assert.match(body, /\.quick-jump-nav\{position:sticky/);
+      assert.match(body, /scroll-padding-top:calc\(var\(--site-header-h\)/);
+    }
   }
   const python = await worker.fetch(new Request('https://example.org/downloads/clicker.py'), env);
   assert.equal(python.status, 200);
