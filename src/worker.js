@@ -95,9 +95,12 @@ export default {
 
     const closeMatch = /^\/api\/rooms\/([A-Za-z0-9_-]{16})\/close$/.exec(path);
     if (closeMatch && request.method === 'POST') {
-      if ((request.headers.get('content-length') || '0') > 256) return json({ error: 'Invalid request' }, 413);
-      const value = await request.json().catch(() => ({}));
-      if (typeof value.hostToken !== 'string' || value.hostToken.length > 128) return json({ error: 'Invalid credential' }, 400);
+      if (Number(request.headers.get('content-length') || 0) > 256) return json({ error: 'Invalid request' }, 413);
+      const body = await request.text();
+      if (body.length > 256) return json({ error: 'Invalid request' }, 413);
+      let value;
+      try { value = JSON.parse(body); } catch { return json({ error: 'Invalid request' }, 400); }
+      if (!value || typeof value.hostToken !== 'string' || value.hostToken.length > 128) return json({ error: 'Invalid credential' }, 400);
       const stub = env.CLICKER_ROOMS.get(env.CLICKER_ROOMS.idFromName(closeMatch[1]));
       return stub.fetch('https://room.internal/close', { method: 'POST', body: JSON.stringify({ hash: await digest(value.hostToken) }) });
     }

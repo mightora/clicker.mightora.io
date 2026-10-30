@@ -103,6 +103,22 @@ test('creates a random session and stores only hashed tokens', async () => {
   assert.equal(await worker.fetch(new Request('https://example.org/bad'), env).then(r => r.status), 404);
 });
 
+test('rejects cross-origin sockets and oversized or malformed session-close bodies', async () => {
+  const id = 'a'.repeat(16);
+  const address = `https://example.org/api/rooms/${id}/ws`;
+  const nonSocket = await worker.fetch(new Request(address), {});
+  assert.equal(nonSocket.status, 426);
+  const crossOrigin = await worker.fetch(new Request(address, { headers: { upgrade: 'websocket', origin: 'https://other.example' } }), {});
+  assert.equal(crossOrigin.status, 403);
+  const closeUrl = `https://example.org/api/rooms/${id}/close`;
+  const badJson = await worker.fetch(new Request(closeUrl, { method: 'POST', body: '{' }), {});
+  assert.equal(badJson.status, 400);
+  const jsonNull = await worker.fetch(new Request(closeUrl, { method: 'POST', body: 'null' }), {});
+  assert.equal(jsonNull.status, 400);
+  const oversized = await worker.fetch(new Request(closeUrl, { method: 'POST', body: 'x'.repeat(300) }), {});
+  assert.equal(oversized.status, 413);
+});
+
 test('only authenticated phones can send the four arrow commands', async () => {
   const { room, sockets } = mockRoom();
   const hostToken = 'h'.repeat(32), remoteToken = 'r'.repeat(32);
