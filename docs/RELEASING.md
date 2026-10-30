@@ -24,10 +24,17 @@ The [portable desktop release workflow](../.github/workflows/desktop-releases.ym
 
 **Integration does not mean the EXE is signed yet.** Identity verification and the following configuration must be completed in the publisher's Azure subscription. Until then, releases continue to be explicitly labelled **unsigned**. The release notes reflect the actual Windows binary's verified signing status.
 
+### Confirmed publisher and trading-name distinction
+
+- **Legal organisation for Microsoft verification and the public certificate subject:** **TWEED TECHNOLOGY LIMITED** (Companies House number **07820713**), [official register](https://find-and-update.company-information.service.gov.uk/company/07820713).
+- **Trading name and application brand:** **Mightora**; the [Mightora legal notice](https://mightora.io/about/) identifies the company behind the trading name.
+- Use the company's exact current registered name and address when applying. Microsoft validates the legal organisation and does not let public-trust certificate holders choose an arbitrary brand as the verified publisher.
+- **Not yet provisioned:** No Azure signing account, certificate profile, Entra service principal, or chargeable signing subscription has been created through this work. The unsigned release remains available until the publisher elects to continue.
+
 ### 1. Create the Microsoft resources
 
 1. Sign in to the [Azure portal](https://portal.azure.com). Follow the [official setup quickstart](https://learn.microsoft.com/en-us/azure/artifact-signing/quickstart) to create an Artifact Signing account in a supported region, then choose a **Public Trust** certificate profile for publicly downloadable Windows software. The subscription incurs the applicable service charges.
-2. Complete the publisher **identity verification** in the Azure portal. Microsoft verifies the actual legal individual or organisation, so the Windows publisher cannot simply be an arbitrary product name such as "Mightora" unless it is the verified identity. The approving Azure user may need the **Artifact Signing Identity Verifier** role.
+2. Complete **Public organisation identity verification** in the Azure portal for **TWEED TECHNOLOGY LIMITED**, company number **07820713**. Do not submit the trading name alone as the legal entity. The approving Azure user may need the **Artifact Signing Identity Verifier** role. Prepare two different monitored email addresses on the same domain owned by the legal entity and the representative's government-ID-matching details.
 3. Once the identity is approved, create a certificate profile (for example `mightora-clicker`). Note the account name, profile name, and **regional endpoint** from Microsoft documentation for your account's region.
 4. In Microsoft Entra ID create a dedicated **application registration and service principal** for GitHub signing. Add a **federated identity credential** with:
 

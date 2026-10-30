@@ -46,6 +46,8 @@ If downloading the Python script on its own, install dependencies first: `python
 
 The desktop release workflow now includes **Microsoft Azure Artifact Signing** with short-lived GitHub OIDC authentication, signature and timestamp verification, and a fail-closed signing gate. It will start signing Windows releases once the publisher completes Azure identity verification and configures the account, certificate profile and GitHub Actions variables. Until then, public downloads remain explicitly unsigned. A signature provides publisher identity and file integrity, not a guarantee of safety or immediate SmartScreen approval. See the step-by-step [Azure activation guide](docs/RELEASING.md).
 
+The future signing identity will be **TWEED TECHNOLOGY LIMITED** (UK company number **07820713**); **Mightora** remains its trading name and the product brand. No paid Azure signing resources have been provisioned yet.
+
 ## How it works
 
 - `POST /api/sessions` creates a new independent Durable Object room and returns strong random, separate host and phone tokens.
