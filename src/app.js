@@ -159,24 +159,23 @@
   const match = /^#remote\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)$/.exec(location.hash);
   if (match) initRemote(match[1], match[2]);
   else {
-    const releaseBase = 'https://github.com/mightora/clicker.mightora.io/releases/latest/download/';
     const platforms = {
       windows: {
         badge: 'WINDOWS · PORTABLE · NO PYTHON', title: 'Get the Windows desktop app',
-        description: 'A single portable EXE. No Python, installer or administrator rights required to start it on a computer that permits unsigned apps.',
-        link: releaseBase + 'mightora-clicker-windows.exe', label: 'Download Windows EXE', hint: 'Unsigned for now. Windows may warn or block it; respect your computer\'s security policy.',
+        description: 'One portable EXE. No Python or installer required. Click below and open the file from your browser\'s Downloads list.',
+        link: '/downloads/mightora-clicker-windows.exe', label: 'Download Clicker for Windows (.exe)', hint: 'Direct download, no GitHub account or build pipeline. This version is unsigned; Windows may warn or block it.',
         steps: ['Open the downloaded <strong>mightora-clicker-windows.exe</strong> on your computer.', 'Start a session below, then click <strong>Copy private connection code</strong>.', 'Paste the code into the EXE when asked, and return to your slides.'],
       },
       macos: {
         badge: 'MAC · NO PYTHON INSTALLATION', title: 'Get the Mac desktop app',
-        description: 'Choose the ready-made Mac build from our GitHub downloads.',
-        link: releaseBase + 'mightora-clicker-macos', label: 'Download Mac app', hint: 'Unsigned for now. macOS may require you to approve the app and grant Accessibility access.',
+        description: 'Download the ready-made Mac file directly. No GitHub account or Python installation needed.',
+        link: '/downloads/mightora-clicker-macos', label: 'Download Clicker for Mac', hint: 'Unsigned for now. macOS may require you to approve the app and grant Accessibility access.',
         steps: ['Download the <strong>mightora-clicker-macos</strong> app from the latest public release.', 'Run it on your Mac. macOS may ask you for Accessibility permission to control slides.', 'Start a session below, copy the <strong>private connection code</strong>, and paste it into the app.'],
       },
       linux: {
         badge: 'LINUX · NO PYTHON INSTALLATION', title: 'Get the Linux desktop app',
-        description: 'Choose the ready-made Linux build from our GitHub downloads.',
-        link: releaseBase + 'mightora-clicker-linux', label: 'Download Linux app', hint: 'Use an X11 desktop where possible. Wayland may block simulated keypresses.',
+        description: 'Download the ready-made Linux file directly. No GitHub account or Python installation needed.',
+        link: '/downloads/mightora-clicker-linux', label: 'Download Clicker for Linux', hint: 'Use an X11 desktop where possible. Wayland may block simulated keypresses.',
         steps: ['Download <strong>mightora-clicker-linux</strong> from the latest release.', 'Mark the file executable (<code>chmod +x mightora-clicker-linux</code>), then run it on your desktop.', 'Start a session below, copy the <strong>private connection code</strong>, and paste it into the app.'],
       },
     };
@@ -193,15 +192,9 @@
       $('mainDownload').href = option.link;
       $('mainDownloadLabel').textContent = option.label;
       $('downloadHint').textContent = option.hint;
-      if (option.link.startsWith('https://')) {
-        $('mainDownload').removeAttribute('download');
-        $('mainDownload').target = '_blank';
-        $('mainDownload').rel = 'noopener noreferrer';
-      } else {
-        $('mainDownload').setAttribute('download', '');
-        $('mainDownload').removeAttribute('target');
-        $('mainDownload').removeAttribute('rel');
-      }
+      $('mainDownload').setAttribute('download', option.link.split('/').pop());
+      $('mainDownload').removeAttribute('target');
+      $('mainDownload').removeAttribute('rel');
       $('downloadSteps').innerHTML = option.steps.map(step => `<li>${step}</li>`).join('');
     }
     document.querySelectorAll('[data-platform]').forEach(button => button.addEventListener('click', () => choosePlatform(button.dataset.platform)));

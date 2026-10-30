@@ -45,7 +45,7 @@ test('serves app assets with a restrictive CSP and no-cache HTML', async () => {
   assert.match(html, /id="copyDesktopCode"/);
   assert.match(html, /id="desktopCodePreview"/);
   assert.match(html, /aria-label="Choose your computer"/);
-  assert.match(html, /releases\/latest\/download\/mightora-clicker-windows\.exe/);
+  assert.match(html, /href="\/downloads\/mightora-clicker-windows\.exe" download="mightora-clicker-windows\.exe"/);
   assert.match(html, /id="copyDesktopCodeLabel"/);
   assert.doesNotMatch(html, /id="sessionCode"/);
   assert.match(html, /<nav class="quick-jump-nav"/);
@@ -85,6 +85,13 @@ test('serves app assets with a restrictive CSP and no-cache HTML', async () => {
   assert.equal(zipBytes.readUInt32LE(0), 0x04034b50);
   assert.ok(zipBytes.includes(Buffer.from('setup-windows.bat')));
   assert.ok(zipBytes.includes(Buffer.from('clicker-windows.ps1')));
+  for (const platform of ['windows.exe', 'macos', 'linux']) {
+    const name = platform === 'windows.exe' ? 'windows.exe' : platform;
+    const download = await worker.fetch(new Request(`https://example.org/downloads/mightora-clicker-${name}`), env);
+    assert.equal(download.status, 302);
+    assert.equal(download.headers.get('location'), `https://github.com/mightora/clicker.mightora.io/releases/latest/download/mightora-clicker-${name}`);
+    assert.equal(download.headers.get('cache-control'), 'no-store');
+  }
 });
 
 test('creates a random session and stores only hashed tokens', async () => {

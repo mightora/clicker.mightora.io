@@ -9,6 +9,13 @@ const COMPANION_PY = __COMPANION_PY__;
 const COMPANION_PS = __COMPANION_PS__;
 const COMPANION_ZIP_BASE64 = __COMPANION_ZIP_BASE64__;
 
+const RELEASE_DOWNLOAD_BASE = 'https://github.com/mightora/clicker.mightora.io/releases/latest/download/';
+const PORTABLE_DOWNLOADS = Object.freeze({
+  '/downloads/mightora-clicker-windows.exe': `${RELEASE_DOWNLOAD_BASE}mightora-clicker-windows.exe`,
+  '/downloads/mightora-clicker-macos': `${RELEASE_DOWNLOAD_BASE}mightora-clicker-macos`,
+  '/downloads/mightora-clicker-linux': `${RELEASE_DOWNLOAD_BASE}mightora-clicker-linux`,
+});
+
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 const ALLOWED_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 const enc = new TextEncoder();
@@ -50,6 +57,12 @@ export default {
     if (request.method === 'GET' && path === '/assets/app.css') return safeResponse(PAGE_CSS, 'text/css; charset=utf-8');
     if (request.method === 'GET' && path === '/assets/app.js') return safeResponse(PAGE_JS, 'text/javascript; charset=utf-8');
     if (request.method === 'GET' && path === '/assets/qrcode.min.js') return safeResponse(QR_JS, 'text/javascript; charset=utf-8', 'public, max-age=86400');
+    if ((request.method === 'GET' || request.method === 'HEAD') && Object.hasOwn(PORTABLE_DOWNLOADS, path)) {
+      return new Response(null, { status: 302, headers: {
+        location: PORTABLE_DOWNLOADS[path],
+        'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff',
+      } });
+    }
     if (request.method === 'GET' && path === '/downloads/clicker.py') {
       return new Response(COMPANION_PY, {headers: {
         'content-type':'text/x-python; charset=utf-8', 'content-disposition':'attachment; filename="mightora-clicker.py"',
