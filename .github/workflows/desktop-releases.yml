@@ -157,9 +157,11 @@ jobs:
         shell: bash
         run: |
           test -f release/windows-signing-status.txt
-          if grep -qx 'signed-and-verified' release/windows-signing-status.txt; then
+          # The marker is written on Windows, so normalise CRLF before comparing.
+          SIGNING_STATUS="$(tr -d '\r\n' < release/windows-signing-status.txt)"
+          if [[ "$SIGNING_STATUS" == 'signed-and-verified' ]]; then
             SIGNING_NOTE='**Windows EXE: digitally signed and timestamped using Microsoft Azure Artifact Signing.** The release workflow verified its Authenticode signature before publication.'
-          elif grep -qx 'unsigned' release/windows-signing-status.txt; then
+          elif [[ "$SIGNING_STATUS" == 'unsigned' ]]; then
             SIGNING_NOTE='**Windows EXE: unsigned.** SmartScreen or organisational policy may warn or block it. Artifact Signing is not yet activated for this repository.'
           else
             echo 'Unknown Windows signing state; refusing to publish.' >&2
